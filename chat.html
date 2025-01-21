@@ -135,7 +135,7 @@
     </div>
 
     <div id="chat-room" style="display: none;">
-      <a href="https://dle.plymouth.ac.uk/my/" id="" class="back-btn">Back</a>
+      <a href="https://dle.plymouth.ac.uk/mod/quiz/view.php?id=1905975" class="back-btn">Back</a>
       <h2 class="chat-header" id="chatRoomHeader">Chat Room</h2>
       <div class="chat-messages d-flex flex-column" id="chatMessages"></div>
       <div class="input-group">
@@ -157,7 +157,7 @@
       storageBucket: "codebelljobportal.appspot.com",
       messagingSenderId: "516533965908",
       appId: "1:516533965908:web:8919af19029a1ab11289c1",
-      measurementId: "G-61HE815QSX"
+      measurementId: "G-61HE815QSX",
     };
 
     const app = initializeApp(firebaseConfig);
@@ -172,7 +172,6 @@
     const chatMessageInput = document.getElementById("chatMessage");
     const joinRoomButton = document.getElementById("joinRoom");
     const sendMessageButton = document.getElementById("sendMessage");
-    const backButton = document.getElementById("backButton");
 
     let currentRoom = "";
     let userName = "";
@@ -197,14 +196,6 @@
       loadMessages(currentRoom);
     });
 
-    // Back button logic
-    backButton.addEventListener("click", (e) => {
-      e.preventDefault();
-      chatRoom.style.display = "none";
-      roomSelection.style.display = "block";
-      chatMessages.innerHTML = ""; // Clear chat messages
-    });
-
     // Send message
     sendMessageButton.addEventListener("click", async () => {
       const message = chatMessageInput.value.trim();
@@ -219,7 +210,7 @@
           name: userName,
           room: currentRoom,
           text: message,
-          timestamp: serverTimestamp()
+          timestamp: serverTimestamp(),
         });
         chatMessageInput.value = "";
       } catch (error) {
