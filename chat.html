@@ -110,6 +110,22 @@
       color: white;
       text-decoration: none;
     }
+
+    .clean-btn {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .clean-btn:hover {
+      background-color: #c0392b;
+      color: white;
+      text-decoration: none;
+    }
   </style>
 </head>
 
@@ -136,6 +152,7 @@
 
     <div id="chat-room" style="display: none;">
       <a href="https://dle.plymouth.ac.uk/mod/quiz/view.php?id=1905975" class="back-btn">Back</a>
+      <button id="cleanChat" class="clean-btn">Clean Chat</button>
       <h2 class="chat-header" id="chatRoomHeader">Chat Room</h2>
       <div class="chat-messages d-flex flex-column" id="chatMessages"></div>
       <div class="input-group">
@@ -147,7 +164,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -172,6 +189,7 @@
     const chatMessageInput = document.getElementById("chatMessage");
     const joinRoomButton = document.getElementById("joinRoom");
     const sendMessageButton = document.getElementById("sendMessage");
+    const cleanChatButton = document.getElementById("cleanChat");
 
     let currentRoom = "";
     let userName = "";
@@ -221,7 +239,10 @@
 
     // Load messages for a room
     function loadMessages(room) {
-      const messagesQuery = query(collection(db, "chats"), where("room", "==", room));
+      const messagesQuery = query(
+        collection(db, "chats"),
+        where("room", "==", room)
+      );
 
       onSnapshot(messagesQuery, (snapshot) => {
         chatMessages.innerHTML = ""; // Clear previous messages
@@ -242,6 +263,26 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
       });
     }
+
+    // Clean chat messages for a room
+    cleanChatButton.addEventListener("click", async () => {
+      if (!currentRoom) {
+        alert("No room selected.");
+        return;
+      }
+
+      const messagesQuery = query(
+        collection(db, "chats"),
+        where("room", "==", currentRoom)
+      );
+
+      const snapshot = await getDocs(messagesQuery);
+      snapshot.forEach(async (docSnapshot) => {
+        await deleteDoc(doc(db, "chats", docSnapshot.id));
+      });
+
+      alert("Chat cleaned for this room.");
+    });
 
     // Escape HTML to prevent rendering of injected HTML code
     function escapeHtml(text) {
